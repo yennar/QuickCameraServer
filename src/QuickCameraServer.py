@@ -28,6 +28,7 @@ class ServerConfigWin(QDialog):
 
         self.vdoMain = QCameraViewfinder()
         layMain.addRow('Preview',self.vdoMain)
+	self.vdoMain.setMinimumSize(320,240)
         
         self.btnText = QPushButton('Test')
         layMain.addRow('Preview',self.btnText)
@@ -49,7 +50,8 @@ class ServerConfigWin(QDialog):
         
         self.mainCamera = QCamera(self.cbxCamera.currentData())
         self.mainImageCapture = QCameraImageCapture(self.mainCamera)
-        self.mainImageCapture.setCaptureDestination(QCameraImageCapture.CaptureToBuffer)
+        #self.mainImageCapture.setCaptureDestination(QCameraImageCapture.CaptureToBuffer)
+        self.mainImageCapture.setCaptureDestination(QCameraImageCapture.CaptureToFile)
         self.mainImageCapture.setBufferFormat(QVideoFrame.Format_Jpeg)
         self.mainImageCapture.imageAvailable.connect(self.onImageAvailable)
         self.mainImageCapture.imageSaved.connect(self.onImageSaved)
@@ -67,7 +69,12 @@ class ServerConfigWin(QDialog):
         self.mainCamera.unlock()
 
     def onImageSaved(self,image_id,image_name):
-        print image_id,image_name
+	imageFile = QFile(image_name)
+	
+	if imageFile.exists():
+	    pixmap = QPixmap.fromImage(QImage(fileName))
+	    imageFile.remove()
+
     
     def onImageAvailable(self,image_id,image_buffer):
         print image_id
